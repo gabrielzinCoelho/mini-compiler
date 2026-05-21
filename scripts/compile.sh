@@ -1,38 +1,52 @@
 #!/bin/bash
 
-# Script para compilar arquivo Lex (.l) usando flex e gcc
-# Base: executar a partir de src (ex.: ./scripts/compile.sh lexical2.l)
-# Uso: ./scripts/compile.sh nomedoarquivo.l
+# Script para compilar Lexer (.l) e Parser (.y) de forma integrada
+# Uso: ./scripts/compile.sh
 
-if [ $# -eq 0 ]; then
-    echo "Erro: Nenhum arquivo fornecido"
-    echo "Uso: ./scripts/compile.sh nomedoarquivo.l"
-    exit 1
-fi
+echo "Iniciando compilação do Lexer e Parser..."
 
-LEX_FILE=$1
-LEX_NAME=$(basename "$LEX_FILE" .l)
+# Define os diretórios baseados na estrutura do seu projeto
+SRC_DIR="src"
+BIN_DIR="bin"
 
-echo "Compilando $LEX_FILE..."
+# Cria a pasta bin caso ela não exista
+mkdir -p "$BIN_DIR"
 
-# Passo 1: Gerar lex.yy.c com flex
-echo "[1/2] Executando flex..."
-flex -o bin/lex.yy.c "$LEX_FILE"
+# Passo 1: Gerar parser.c e parser.h com bison
+echo "[1/3] Executando bison..."
+# A flag -d gera também o .h (header) necessário para o lexer enxergar os tokens
+bison -d -o "$BIN_DIR/parser.c" "$SRC_DIR/parser.y"
 if [ $? -ne 0 ]; then
-    echo "Erro ao executar flex"
+    echo "Erro ao executar bison no arquivo parser.y"
     exit 1
 fi
-echo "✓ lex.yy.c gerado"
+echo "✓ parser.c e parser.h gerados em $BIN_DIR"
 
-# Passo 2: Compilar com gcc
-echo "[2/2] Compilando com gcc..."
-gcc bin/lex.yy.c -ll -o bin/main
+# Passo 2: Gerar lexer.c com flex
+echo "[2/3] Executando flex..."
+flex -o "$BIN_DIR/lexer.c" "$SRC_DIR/lexer.l"
+if [ $? -ne 0 ]; then
+    echo "Erro ao executar flex no arquivo lexer.l"
+    exit 1
+fi
+echo "✓ lexer.c gerado em $BIN_DIR"
+
+# Passo 3: Compilar com gcc
+echo "[3/3] Compilando com gcc..."
+# Seguindo a instrução do professor: usando -lfl (para Linux)
+gcc -o "$BIN_DIR/main" "$BIN_DIR/parser.c" "$BIN_DIR/lexer.c" -lfl
+
+# Nota: Se tiver um erro sobre "undefined reference to yyerror" no futuro,
+# pode ser necessário adicionar a flag -ly ou implementar yyerror no seu .y.
+# gcc -o "$BIN_DIR/main" "$BIN_DIR/parser.c" "$BIN_DIR/lexer.c" -ly -lfl
+
 if [ $? -ne 0 ]; then
     echo "Erro ao compilar com gcc"
     exit 1
 fi
-echo "✓ Executável gerado em bin/main"
+echo "✓ Executável gerado em $BIN_DIR/main"
 
 echo ""
 echo "Compilação concluída com sucesso!"
-echo "Para executar: ./scripts/run.sh <nomedoarquivo.txt>"
+echo "Para executar, redirecione um dos inputs. Exemplo:"
+echo "./bin/main < inputs/test-1.txt"
