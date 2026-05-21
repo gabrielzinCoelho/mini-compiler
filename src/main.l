@@ -42,8 +42,11 @@ void printLexeme(char *lexeme, char *tokenClass){
 
 #define TABLE_SIZE 211  // tamanho da hash (número primo aumenta dispersão)
 
+int symbol_count = 1;
+
 /* Estrutura do símbolo */
 typedef struct simbolo {
+    int pos;
     char *lexeme;           // lexeme string
     char *tokenClass;        // token class (identifier)
     int line;              // lexeme line
@@ -79,6 +82,7 @@ void insertTable(const char* lexeme, const char* tokenClass, int line, int colum
     if (searchTable(lexeme) != NULL) return; // evita duplicatas
     unsigned int h = hash(lexeme);
     Symbol* newSymbol = (Symbol*) malloc(sizeof(Symbol));
+    newSymbol->pos = symbol_count++;
     newSymbol->lexeme = strdup(lexeme);
     newSymbol->tokenClass = strdup(tokenClass);
     newSymbol->line = line;
@@ -94,20 +98,11 @@ void insertTable(const char* lexeme, const char* tokenClass, int line, int colum
 ws                      [ \t]+
 newline                 [\n]
 digit                   [0-9]
-letter                  [a-zA-Z]
 float                   ({digit}+\.{digit}*|\.{digit}+)
 integer                 {digit}+
 identifier              [a-zA-Z]([a-zA-Z0-9_]*[a-zA-Z0-9])? 
 singleLineComment       \/\/[^\n]*
 multilineComment        \/\*([^*]|\*+[^*/])*\*+\/
-/* TODO: remove 'invalidSequence', 'invalidIdentifier' */
-invalidSequence         [^a-zA-Z0-9_ \t\n]+
-invalidIdentifier       (_+{identifier}|{digit}+{identifier}|{identifier}_+)
-
-/* 
-invalidSeq + ..id: tentativa de deixar o analisador mais compreensível; já detectávamos erros com precisão, e decidimos
-fazer essa tentativa de agrupar caracteres em um erro só. no entanto a política de maior casamento fodeu nós
-*/
 
 %%
 
@@ -190,8 +185,6 @@ float  { yylval = TYPE_FLOAT; printLexeme(yytext, "TYPE (TYPE_FLOAT)"); incremen
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Identifiers and Numbers −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 %}
 
-{invalidIdentifier} { printLexeme(yytext, "LEXICAL_ERROR"); incrementColumnCounter(yyleng); }
-
 {identifier} { insertTable(yytext, "IDENTIFIER", yylineno, column_number); printLexeme(yytext, "IDENTIFIER"); incrementColumnCounter(yyleng); }
 
 {float} { yylval = NUMBER_FLOAT; printLexeme(yytext, "NUMBER (NUMBER_FLOAT)"); incrementColumnCounter(yyleng); }
@@ -201,8 +194,6 @@ float  { yylval = TYPE_FLOAT; printLexeme(yytext, "TYPE (TYPE_FLOAT)"); incremen
 %{
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Errors −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 %}
-
-{invalidSequence} { printLexeme(yytext, "LEXICAL_ERROR"); incrementColumnCounter(yyleng); }
 
 . { printLexeme(yytext, "LEXICAL_ERROR"); incrementColumnCounter(yyleng); }
 
@@ -220,11 +211,11 @@ int main(int argc, char **argv) {
     
     yylex();
     printf("\n--- TABELA DE SÍMBOLOS ---\n");
-    printf("\nToken         Lexema\n");
-    printf("----------------------\n");
+    printf("\nPos.  Token         Lexema\n");
+    printf("-----------------------------\n");
     for (int i = 0; i < TABLE_SIZE; i++) {
         for (Symbol* s = table[i]; s != NULL; s = s->next) {
-            printf("%-13s %s\n", s->tokenClass, s->lexeme);
+            printf("%-5d %-13s %s\n", s->pos, s->tokenClass, s->lexeme);
         }
     }
 
