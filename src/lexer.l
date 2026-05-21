@@ -190,7 +190,7 @@ float  { yylval = TYPE_FLOAT; printLexeme(yytext, "TYPE (TYPE_FLOAT)"); incremen
 
 {float} { yylval = NUMBER_FLOAT; printLexeme(yytext, "NUMBER (NUMBER_FLOAT)"); incrementColumnCounter(yyleng); }
 
-{integer} { yylval = NUMBER_INT; printLexeme(yytext, "NUMBER (NUMBER_INT)"); incrementColumnCounter(yyleng); return DIGIT; }
+{integer} { yylval = atoi(yytext); printLexeme(yytext, "NUMBER (NUMBER_INT)"); incrementColumnCounter(yyleng); return DIGIT; }
 
 %{
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Errors −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
