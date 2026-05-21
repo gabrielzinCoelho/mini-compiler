@@ -1,5 +1,8 @@
 teste.l
 *.yy.c
 *.o
-*/bin/*
+bin/*
 !*/bin/.gitkeep
+main
+lexer.c
+parser.c
