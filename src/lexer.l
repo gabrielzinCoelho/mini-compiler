@@ -180,7 +180,7 @@ float  { yylval = TYPE_FLOAT; printLexeme(yytext, "TYPE (TYPE_FLOAT)"); incremen
 "}"     { printLexeme(yytext, "PUNCT_CLOSE_BRACE"); incrementColumnCounter(yyleng); return PUNCT_CLOSE_BRACE; }
 
 %{
-/* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Identifiers and Numbers −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
+/* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Identifiers and Literal Numbers −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 %}
 
 {identifier} { insertTable(yytext, "ID", yylineno, column_number); printLexeme(yytext, "ID"); incrementColumnCounter(yyleng); return ID; }

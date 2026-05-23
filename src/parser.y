@@ -20,7 +20,10 @@ void yyerror(const char *s);
 %token TYPE
 
 %token RELOP
-%token LOGIC_OP
+%token EQOP
+%token AND
+%token OR
+%token NOT
 
 %token ASSIGN
 
@@ -109,7 +112,7 @@ expr
   
   | expr OR expr
   | expr AND expr
-  
+
   | expr EQOP expr
   | expr RELOP expr
 
