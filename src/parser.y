@@ -9,18 +9,36 @@ void yyerror(const char *s);
 
 %}
 
-/* −−−−−−−−−−−−−−−−−−−− Tokens provenientes do analisador léxico −−−−−−−−−−−−−−−−−−−−− */
+/* −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−− Lexer Tokens −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 
-%token CHAR
-%token COMMA
-%token FLOAT
+%token IF
+%token ELSE
+%token WHILE
+%token PRINT
+%token READ
+
+%token TYPE
+
+%token RELOP
+%token LOGIC_OP
+
+%token ASSIGN
+
+%token PLUS
+%token MINUS
+%token POW
+%token MULT
+%token DIV
+
+%token PUNCT_SEMICOLON
+%token PUNCT_COMMA
+%token PUNCT_OPEN_PAREN
+%token PUNCT_CLOSE_PAREN
+%token PUNCT_OPEN_BRACE
+%token PUNCT_CLOSE_BRACE
+
 %token ID
-%token INT
-%token SEMI
-
-%token NUMBER
-
-%token DIGIT 
+%token DIGIT;
 
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Definição de Precedência −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 

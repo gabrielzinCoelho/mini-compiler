@@ -123,72 +123,72 @@ multilineComment        \/\*([^*]|\*+[^*/])*\*+\/
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Keywords −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 %}
 
-if      { printLexeme(yytext, "IF"); incrementColumnCounter(yyleng);    }
-else    { printLexeme(yytext, "ELSE"); incrementColumnCounter(yyleng);  }
-while   { printLexeme(yytext, "WHILE"); incrementColumnCounter(yyleng); }
-print   { printLexeme(yytext, "PRINT"); incrementColumnCounter(yyleng); }
-read    { printLexeme(yytext, "READ"); incrementColumnCounter(yyleng);  }
+if      { printLexeme(yytext, "IF"); incrementColumnCounter(yyleng); return IF; }
+else    { printLexeme(yytext, "ELSE"); incrementColumnCounter(yyleng); return ELSE; }
+while   { printLexeme(yytext, "WHILE"); incrementColumnCounter(yyleng); return WHILE; }
+print   { printLexeme(yytext, "PRINT"); incrementColumnCounter(yyleng); return PRINT; }
+read    { printLexeme(yytext, "READ"); incrementColumnCounter(yyleng); return READ; }
 
 %{
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Type Definitions −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 %}
 
-int    { yylval = TYPE_INT; printLexeme(yytext, "TYPE (TYPE_INT)"); incrementColumnCounter(yyleng); }
-float  { yylval = TYPE_FLOAT; printLexeme(yytext, "TYPE (TYPE_FLOAT)"); incrementColumnCounter(yyleng); }
+int    { yylval = TYPE_INT; printLexeme(yytext, "TYPE (TYPE_INT)"); incrementColumnCounter(yyleng); return TYPE; }
+float  { yylval = TYPE_FLOAT; printLexeme(yytext, "TYPE (TYPE_FLOAT)"); incrementColumnCounter(yyleng); return TYPE; }
 
 %{
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Relational Operators −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 %}
 
-"<="    { yylval = RELOP_LE; printLexeme(yytext, "RELOP (RELOP_LE)"); incrementColumnCounter(yyleng); }
-">="    { yylval = RELOP_GE; printLexeme(yytext, "RELOP (RELOP_GE)"); incrementColumnCounter(yyleng); }
-"!="    { yylval = RELOP_NE; printLexeme(yytext, "RELOP (RELOP_NE)"); incrementColumnCounter(yyleng); }
-"=="    { yylval = RELOP_EQ; printLexeme(yytext, "RELOP (RELOP_EQ)"); incrementColumnCounter(yyleng); }
-"<"     { yylval = RELOP_LT; printLexeme(yytext, "RELOP (RELOP_LT)"); incrementColumnCounter(yyleng); }
-">"     { yylval = RELOP_GT; printLexeme(yytext, "RELOP (RELOP_GT)"); incrementColumnCounter(yyleng); }
+"<="    { yylval = RELOP_LE; printLexeme(yytext, "RELOP (RELOP_LE)"); incrementColumnCounter(yyleng); return RELOP; }
+">="    { yylval = RELOP_GE; printLexeme(yytext, "RELOP (RELOP_GE)"); incrementColumnCounter(yyleng); return RELOP; }
+"!="    { yylval = RELOP_NE; printLexeme(yytext, "RELOP (RELOP_NE)"); incrementColumnCounter(yyleng); return RELOP; }
+"=="    { yylval = RELOP_EQ; printLexeme(yytext, "RELOP (RELOP_EQ)"); incrementColumnCounter(yyleng); return RELOP; }
+"<"     { yylval = RELOP_LT; printLexeme(yytext, "RELOP (RELOP_LT)"); incrementColumnCounter(yyleng); return RELOP; }
+">"     { yylval = RELOP_GT; printLexeme(yytext, "RELOP (RELOP_GT)"); incrementColumnCounter(yyleng); return RELOP; }
 
 %{
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Assignment Operators −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 %}
 
-"="     { printLexeme(yytext, "ASSIGN_OP"); incrementColumnCounter(yyleng); }
+"="     { printLexeme(yytext, "ASSIGN_OP"); incrementColumnCounter(yyleng); return ASSIGN; }
 
 %{
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Arithmetic Operators −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 %}
 
-"+"     { printLexeme(yytext, "ARITH_OP_ADD"); incrementColumnCounter(yyleng); return yytext[0]; }
-"-"     { printLexeme(yytext, "ARITH_OP_SUB"); incrementColumnCounter(yyleng); return yytext[0]; }
-"**"    { printLexeme(yytext, "ARITH_OP_POW"); incrementColumnCounter(yyleng); /* FAZER */ }
-"*"     { printLexeme(yytext, "ARITH_OP_MUL"); incrementColumnCounter(yyleng); return yytext[0]; }
-"/"     { printLexeme(yytext, "ARITH_OP_DIV"); incrementColumnCounter(yyleng); return yytext[0]; }
+"+"     { printLexeme(yytext, "ARITH_OP_ADD"); incrementColumnCounter(yyleng); return PLUS; }
+"-"     { printLexeme(yytext, "ARITH_OP_SUB"); incrementColumnCounter(yyleng); return MINUS; }
+"**"    { printLexeme(yytext, "ARITH_OP_POW"); incrementColumnCounter(yyleng); return POW }
+"*"     { printLexeme(yytext, "ARITH_OP_MUL"); incrementColumnCounter(yyleng); return MULT; }
+"/"     { printLexeme(yytext, "ARITH_OP_DIV"); incrementColumnCounter(yyleng); return DIV; }
 
 %{
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Logical Operators −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 %}
 
-"&&"    { yylval = LOGIC_AND; printLexeme(yytext, "LOGIC_OP (LOGIC_AND)"); incrementColumnCounter(yyleng); }
-"||"    { yylval = LOGIC_OR; printLexeme(yytext, "LOGIC_OP (LOGIC_OR)"); incrementColumnCounter(yyleng);  }
-"~"     { yylval = LOGIC_NEG; printLexeme(yytext, "LOGIC_OP (LOGIC_NEG)"); incrementColumnCounter(yyleng); }
+"&&"    { yylval = LOGIC_AND; printLexeme(yytext, "LOGIC_OP (LOGIC_AND)"); incrementColumnCounter(yyleng); return LOGIC_OP; }
+"||"    { yylval = LOGIC_OR; printLexeme(yytext, "LOGIC_OP (LOGIC_OR)"); incrementColumnCounter(yyleng); return LOGIC_OP; }
+"~"     { yylval = LOGIC_NEG; printLexeme(yytext, "LOGIC_OP (LOGIC_NEG)"); incrementColumnCounter(yyleng); return LOGIC_OP; }
 
 %{
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Punctuation Symbols −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 %}
 
-";"     { printLexeme(yytext, "PUNCT_SEMICOLON"); incrementColumnCounter(yyleng); }
-","     { printLexeme(yytext, "PUNCT_COMMA"); incrementColumnCounter(yyleng); }
-"("     { printLexeme(yytext, "PUNCT_OPEN_PAREN"); incrementColumnCounter(yyleng); }
-")"     { printLexeme(yytext, "PUNCT_CLOSE_PAREN"); incrementColumnCounter(yyleng); }
-"{"     { printLexeme(yytext, "PUNCT_OPEN_BRACE"); incrementColumnCounter(yyleng); }
-"}"     { printLexeme(yytext, "PUNCT_CLOSE_BRACE"); incrementColumnCounter(yyleng); }
+";"     { printLexeme(yytext, "PUNCT_SEMICOLON"); incrementColumnCounter(yyleng); return PUNCT_SEMICOLON; }
+","     { printLexeme(yytext, "PUNCT_COMMA"); incrementColumnCounter(yyleng); return PUNCT_COMMA; }
+"("     { printLexeme(yytext, "PUNCT_OPEN_PAREN"); incrementColumnCounter(yyleng); return PUNCT_OPEN_PAREN; }
+")"     { printLexeme(yytext, "PUNCT_CLOSE_PAREN"); incrementColumnCounter(yyleng); return PUNCT_CLOSE_PAREN; }
+"{"     { printLexeme(yytext, "PUNCT_OPEN_BRACE"); incrementColumnCounter(yyleng); return PUNCT_OPEN_BRACE; }
+"}"     { printLexeme(yytext, "PUNCT_CLOSE_BRACE"); incrementColumnCounter(yyleng); return PUNCT_CLOSE_BRACE; }
 
 %{
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Identifiers and Numbers −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 %}
 
-{identifier} { insertTable(yytext, "IDENTIFIER", yylineno, column_number); printLexeme(yytext, "IDENTIFIER"); incrementColumnCounter(yyleng); }
+{identifier} { insertTable(yytext, "IDENTIFIER", yylineno, column_number); printLexeme(yytext, "IDENTIFIER"); incrementColumnCounter(yyleng); return IDENTIFIER; }
 
-{float} { yylval = NUMBER_FLOAT; printLexeme(yytext, "NUMBER (NUMBER_FLOAT)"); incrementColumnCounter(yyleng); }
+{float} { yylval = NUMBER_FLOAT; printLexeme(yytext, "NUMBER (NUMBER_FLOAT)"); incrementColumnCounter(yyleng); return DIGIT; }
 
 {integer} { yylval = atoi(yytext); printLexeme(yytext, "NUMBER (NUMBER_INT)"); incrementColumnCounter(yyleng); return DIGIT; }
 
