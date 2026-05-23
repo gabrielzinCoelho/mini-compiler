@@ -110,7 +110,7 @@ multilineComment        \/\*([^*]|\*+[^*/])*\*+\/
 
 {ws} { incrementColumnCounter(yyleng); }
 
-{newline} { resetColumnCounter(); return '\n'; }
+{newline} { resetColumnCounter(); }
 
 {singleLineComment} { incrementColumnCounter(yyleng); } 
 
