@@ -3,6 +3,8 @@ print(a);
 // print(); ERRO: print sem arg
 
 print("banana");
+print("banana", "Ele me disse \n");
+print("\t Meu nome eh \"João\"");
 print(32.);
 print(32);
 

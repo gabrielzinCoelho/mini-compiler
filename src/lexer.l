@@ -98,6 +98,7 @@ newline                 [\n]
 digit                   [0-9]
 float                   ({digit}+\.{digit}*|\.{digit}+)
 integer                 {digit}+
+literalStr              \"(\\.|[^\"\n])*\"
 identifier              [a-zA-Z]([a-zA-Z0-9_]*[a-zA-Z0-9])? 
 singleLineComment       \/\/[^\n]*
 multilineComment        \/\*([^*]|\*+[^*/])*\*+\/
@@ -188,6 +189,8 @@ float  { yylval = TYPE_FLOAT; printLexeme(yytext, "TYPE (TYPE_FLOAT)"); incremen
 {float}   { printLexeme(yytext, "FLOAT_LITERAL"); incrementColumnCounter(yyleng); return FLOAT_LITERAL; }
 
 {integer} { printLexeme(yytext, "INTEGER_LITERAL"); incrementColumnCounter(yyleng); return INTEGER_LITERAL; }
+
+{literalStr} { printLexeme(yytext, "STR_LITERAL"); incrementColumnCounter(yyleng); return STR_LITERAL; }
 
 %{
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Errors −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */

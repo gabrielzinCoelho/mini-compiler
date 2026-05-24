@@ -43,6 +43,7 @@ void yyerror(const char *s);
 %token ID
 %token INTEGER_LITERAL
 %token FLOAT_LITERAL
+%token STR_LITERAL
 
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Definição de Precedência −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 
@@ -142,6 +143,7 @@ primary_expr
 literal
   : INTEGER_LITERAL
   | FLOAT_LITERAL
+  | STR_LITERAL;
   ;
 
 expr
