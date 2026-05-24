@@ -2,6 +2,8 @@ int main(){
   
   boolean ehMaior = ehMaiorIdade(33, getAltura(0) + 10, 2 + 2);
   
+  _9; // erro léxico
+
   return 0;
 }
 

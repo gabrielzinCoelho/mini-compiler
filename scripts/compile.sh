@@ -15,7 +15,7 @@ mkdir -p "$BIN_DIR"
 # Passo 1: Gerar parser.c e parser.h com bison
 echo "[1/3] Executando bison..."
 # A flag -d gera também o .h (header) necessário para o lexer enxergar os tokens
-bison -d -o "$BIN_DIR/parser.c" "$SRC_DIR/parser.y"
+bison -Wall -d -o "$BIN_DIR/parser.c" "$SRC_DIR/parser.y"
 if [ $? -ne 0 ]; then
     echo "Erro ao executar bison no arquivo parser.y"
     exit 1

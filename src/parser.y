@@ -49,15 +49,15 @@ void yyerror(const char *s);
 
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Definição de Precedência −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 
-%right ASSIGN
+%precedence ASSIGN
 %left OR
 %left AND
 %left EQOP
 %left RELOP
 %left PLUS MINUS
 %left MULT DIV
-%right NOT
-%right UMINUS
+%precedence NOT
+%precedence UMINUS
 
 %%
 
@@ -67,7 +67,7 @@ program
 
 global_decl_list
   : global_decl_list global_decl
-  | /* vazio */
+  | %empty /* vazio */
   ;
 
 global_decl
@@ -81,7 +81,7 @@ func_decl
 
 opt_param_list
   : param_list
-  | /* vazio */
+  | %empty /* vazio */
   ;
 
 param_list
@@ -95,7 +95,7 @@ func_call
 
 opt_func_call_list
   : func_call_list
-  | /* vazio */
+  | %empty /* vazio */
   ;
 
 func_call_list
@@ -105,7 +105,7 @@ func_call_list
 
 stmt_list
   : stmt_list stmt
-  | /* vazio */
+  | %empty /* vazio */
   ;
 
 stmt
@@ -125,7 +125,7 @@ return_stmt
 
 opt_expr
   : expr
-  | /* vazio */
+  | %empty /* vazio */
   ;
 
 block
@@ -155,7 +155,7 @@ if_stmt
   ;
 
 else_clause
-  : /* vazio */
+  : %empty /* vazio */
   | ELSE block
   | ELSE if_stmt
   ;
