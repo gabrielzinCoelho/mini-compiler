@@ -200,6 +200,8 @@ string  { yylval = TYPE_STR; printLexeme(yytext, "TYPE (TYPE_STR)"); incrementCo
 
 {integer} { printLexeme(yytext, "INTEGER_LITERAL"); incrementColumnCounter(yyleng); return INTEGER_LITERAL; }
 
+{literalStr} { printLexeme(yytext, "STR_LITERAL"); incrementColumnCounter(yyleng); return STR_LITERAL; }
+
 %{
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Errors −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 %}
