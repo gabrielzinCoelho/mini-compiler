@@ -9,6 +9,8 @@ if(a){
 
 }else if(b){
   b = 0;
+}else if(b - 2){
+  b = 0;
 }else {
   c = 0;
 }

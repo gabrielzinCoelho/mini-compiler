@@ -71,6 +71,7 @@ stmt
   : var_decl
   | assign_stmt
   | if_stmt
+  | while_stmt
   | block
   ;
 
@@ -116,6 +117,10 @@ else_clause
   : /* vazio */
   | ELSE block
   | ELSE if_stmt
+  ;
+
+while_stmt
+  : WHILE PUNCT_OPEN_PAREN expr PUNCT_CLOSE_PAREN block
   ;
 
 primary_expr
