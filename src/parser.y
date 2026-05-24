@@ -1,14 +1,3 @@
-%{
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-
-int yylex(void);
-
-void yyerror(const char *s);
-
-%}
-
 %code requires {
 typedef struct simbolo {
     int pos;
@@ -20,6 +9,46 @@ typedef struct simbolo {
     struct simbolo *next;
 } Symbol;
 extern Symbol* searchTable(const char* lexeme);
+}
+
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+int yylex(void);
+
+void yyerror(const char *s);
+
+%}
+
+%code {
+/* −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−− Auxiliary Functions −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
+
+/* Lê o valor de um identificador da tabela de símbolos */
+double handle_read_id(const char *id_name) {
+    printf("Consultando tabela de simbolos para: %s\n", id_name);
+    Symbol *sym = searchTable(id_name);
+    if (sym) {
+        printf("  Encontrado na posicao %d, valor: %g\n", sym->pos, sym->value);
+        return sym->value;
+    } else {
+        printf("  Nao encontrado!\n");
+        return 0.0;
+    }
+}
+
+/* Atribui um valor a um identificador na tabela de símbolos */
+double handle_assign_id(const char *id_name, double value) {
+    Symbol *sym = searchTable(id_name);
+    if (sym) {
+        sym->value = value;
+        printf("Atualizado na tabela de simbolos (posicao %d) com valor: %g\n", sym->pos, value);
+    } else {
+        printf("  Nao encontrado na tabela de simbolos!\n");
+    }
+    return value;
+}
 }
 
 %union {
@@ -122,15 +151,7 @@ id_decl
   : ID { printf("Declarando variavel: %s\n", $1); $$ = 0.0; }
   | ID ASSIGN expr { 
       printf("Atribuindo valor na declaracao de: %s\n", $1);
-      Symbol *sym = searchTable($1);
-      if (sym) {
-          sym->value = $3;
-          printf("  Inicializado com valor: %g\n", $3);
-          $$ = $3;
-      } else {
-          printf("  Nao encontrado na tabela de simbolos!\n");
-          $$ = 0.0;
-      }
+      $$ = handle_assign_id($1, $3);
   }
   ;
 
@@ -139,17 +160,7 @@ assign_stmt
   ;
 
 primary_expr
-  : ID { 
-      printf("Consultando tabela de simbolos para: %s\n", $1);
-      Symbol *sym = searchTable($1);
-      if (sym) {
-          printf("  Encontrado na posicao %d, valor: %g\n", sym->pos, sym->value);
-          $$ = sym->value;
-      } else {
-          printf("  Nao encontrado!\n");
-          $$ = 0.0;
-      }
-  }
+  : ID { $$ = handle_read_id($1); }
   | literal
   | PUNCT_OPEN_PAREN expr PUNCT_CLOSE_PAREN { $$ = $2; }
   ;
@@ -162,12 +173,7 @@ literal
 expr
   : ID ASSIGN expr { 
       printf("Assigning to %s: %g\n", $1, $3);
-      Symbol *sym = searchTable($1);
-      if (sym) {
-          sym->value = $3;
-          printf("  Atualizado na tabela de simbolos (posicao %d)\n", sym->pos);
-      }
-      $$ = $3; 
+      $$ = handle_assign_id($1, $3);
   }
   
   | expr OR expr { $$ = $1 || $3; }
