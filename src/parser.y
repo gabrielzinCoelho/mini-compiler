@@ -61,7 +61,31 @@ void yyerror(const char *s);
 %%
 
 program
-  : stmt_list { printf("Aceita \n"); }
+  : global_decl_list { printf("Aceita \n"); }
+  ;
+
+global_decl_list
+  : global_decl_list global_decl
+  | /* vazio */
+  ;
+
+global_decl
+  : func_decl
+  | var_decl
+  ;
+
+func_decl
+  : TYPE ID PUNCT_OPEN_PAREN opt_param_list PUNCT_CLOSE_PAREN block
+  ;
+
+opt_param_list
+  : param_list
+  | /* vazio */
+  ;
+
+param_list
+  : param_list PUNCT_COMMA TYPE ID
+  | TYPE ID
   ;
 
 stmt_list
