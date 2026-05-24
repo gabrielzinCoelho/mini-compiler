@@ -16,6 +16,7 @@ void yyerror(const char *s);
 %token WHILE
 %token PRINT
 %token READ
+%token RETURN
 
 %token TYPE
 
@@ -88,6 +89,20 @@ param_list
   | TYPE ID
   ;
 
+func_call
+  : ID PUNCT_OPEN_PAREN opt_func_call_list PUNCT_CLOSE_PAREN
+  ;
+
+opt_func_call_list
+  : func_call_list
+  | /* vazio */
+  ;
+
+func_call_list
+  : func_call_list PUNCT_COMMA expr
+  | expr
+  ;
+
 stmt_list
   : stmt_list stmt
   | /* vazio */
@@ -100,7 +115,17 @@ stmt
   | while_stmt
   | print_stmt
   | read_stmt
+  | return_stmt
   | block
+  ;
+
+return_stmt
+  : RETURN opt_expr PUNCT_SEMICOLON
+  ;
+
+opt_expr
+  : expr
+  | /* vazio */
   ;
 
 block
@@ -161,6 +186,7 @@ primary_expr
   : ID
   | literal
   | PUNCT_OPEN_PAREN expr PUNCT_CLOSE_PAREN
+  | func_call
   ;
 
 literal

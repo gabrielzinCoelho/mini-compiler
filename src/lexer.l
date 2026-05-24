@@ -130,6 +130,10 @@ else    { printLexeme(yytext, "ELSE"); incrementColumnCounter(yyleng); return EL
 while   { printLexeme(yytext, "WHILE"); incrementColumnCounter(yyleng); return WHILE; }
 print   { printLexeme(yytext, "PRINT"); incrementColumnCounter(yyleng); return PRINT; }
 read    { printLexeme(yytext, "READ"); incrementColumnCounter(yyleng); return READ; }
+return  { printLexeme(yytext, "RETURN"); incrementColumnCounter(yyleng); return RETURN; }
+
+true    { yylval = BOOL_LITERAL_TRUE; printLexeme(yytext, "BOOL_LITERAL (BOOL_LITERAL_TRUE)"); incrementColumnCounter(yyleng); return BOOL_LITERAL; }
+false   { yylval = BOOL_LITERAL_FALSE; printLexeme(yytext, "BOOL_LITERAL (BOOL_LITERAL_FALSE)"); incrementColumnCounter(yyleng); return BOOL_LITERAL; }
 
 %{
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Type Definitions −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
@@ -195,10 +199,6 @@ string  { yylval = TYPE_STR; printLexeme(yytext, "TYPE (TYPE_STR)"); incrementCo
 {float}   { printLexeme(yytext, "FLOAT_LITERAL"); incrementColumnCounter(yyleng); return FLOAT_LITERAL; }
 
 {integer} { printLexeme(yytext, "INTEGER_LITERAL"); incrementColumnCounter(yyleng); return INTEGER_LITERAL; }
-
-"true" { yylval = BOOL_LITERAL_TRUE; printLexeme(yytext, "BOOL_LITERAL (BOOL_LITERAL_TRUE)"); incrementColumnCounter(yyleng); return BOOL_LITERAL; }
-
-"false" { yylval = BOOL_LITERAL_FALSE; printLexeme(yytext, "BOOL_LITERAL (BOOL_LITERAL_FALSE)"); incrementColumnCounter(yyleng); return BOOL_LITERAL; }
 
 %{
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Errors −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */

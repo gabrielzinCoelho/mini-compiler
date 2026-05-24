@@ -1,8 +1,9 @@
 int main(){
+  
+  boolean ehMaior = ehMaiorIdade(33, getAltura(0) + 10, 2 + 2);
+  
   return 0;
 }
-
-main();
 
 boolean ehMaiorIdade(int idade, int alturaEmCm){
   
@@ -13,8 +14,6 @@ boolean ehMaiorIdade(int idade, int alturaEmCm){
   return true;
 }
 
-boolean ehMaior = ehMaiorIdade(33, 177);
+string func1 () {}
 
-void func1 () {}
-
-void func1 () { return;}
+float func1 () { return;}
