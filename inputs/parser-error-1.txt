@@ -1,0 +1,13 @@
+int a = 2, b = 3, c, d = -1;
+if(a){
+  
+  if(d){
+    a = 0;
+  }else
+    a = 1000;
+
+}else if b{
+  b = 0;
+}else {
+  c = 0;
+}
