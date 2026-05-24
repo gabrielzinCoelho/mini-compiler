@@ -2,7 +2,7 @@ teste.l
 *.yy.c
 *.o
 bin/*
-!*/bin/.gitkeep
+!bin/.gitkeep
 main
 lexer.c
 parser.c
