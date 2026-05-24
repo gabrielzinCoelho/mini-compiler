@@ -528,7 +528,6 @@ char *yytext;
 #include <string.h>
 #include "parser.h"
 
-extern double yylval;
 int column_number = 1;
 
 #define TYPE_INT 1
@@ -563,16 +562,7 @@ void printLexeme(char *lexeme, char *tokenClass){
 
 int symbol_count = 1;
 
-/* Estrutura do símbolo */
-typedef struct simbolo {
-    int pos;
-    char *lexeme;           // lexeme string
-    char *tokenClass;        // token class (identifier)
-    int line;              // lexeme line
-    int column;             // lexeme column
-    struct simbolo *next;   // para colisões da hash (linked list)
-} Symbol;
-
+/* Symbol table - declarada e gerenciada aqui no lexer */
 Symbol* table[TABLE_SIZE] = {NULL};
 
 /* Função hash */
@@ -606,13 +596,14 @@ void insertTable(const char* lexeme, const char* tokenClass, int line, int colum
     newSymbol->tokenClass = strdup(tokenClass);
     newSymbol->line = line;
     newSymbol->column = column;
+    newSymbol->value = 0.0;
     newSymbol->next = table[h];
     table[h] = newSymbol;
 }
 
-#line 614 "bin/lexer.c"
+#line 605 "bin/lexer.c"
 /* Regex Definitions  */
-#line 616 "bin/lexer.c"
+#line 607 "bin/lexer.c"
 
 #define INITIAL 0
 
@@ -829,15 +820,15 @@ YY_DECL
 		}
 
 	{
-#line 105 "src/lexer.l"
+#line 96 "src/lexer.l"
 
 
 
-#line 109 "src/lexer.l"
+#line 100 "src/lexer.l"
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Ignorable Symbols −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 
 
-#line 841 "bin/lexer.c"
+#line 832 "bin/lexer.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -906,24 +897,24 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 112 "src/lexer.l"
+#line 103 "src/lexer.l"
 { incrementColumnCounter(yyleng); }
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 114 "src/lexer.l"
+#line 105 "src/lexer.l"
 { resetColumnCounter(); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 116 "src/lexer.l"
+#line 107 "src/lexer.l"
 { incrementColumnCounter(yyleng); } 
 	YY_BREAK
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 118 "src/lexer.l"
+#line 109 "src/lexer.l"
 { incrementColumnCounter(yyleng); }
 	YY_BREAK
 
@@ -931,27 +922,27 @@ YY_RULE_SETUP
 
 case 5:
 YY_RULE_SETUP
-#line 124 "src/lexer.l"
+#line 115 "src/lexer.l"
 { printLexeme(yytext, "IF"); incrementColumnCounter(yyleng); return IF; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 125 "src/lexer.l"
+#line 116 "src/lexer.l"
 { printLexeme(yytext, "ELSE"); incrementColumnCounter(yyleng); return ELSE; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 126 "src/lexer.l"
+#line 117 "src/lexer.l"
 { printLexeme(yytext, "WHILE"); incrementColumnCounter(yyleng); return WHILE; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 127 "src/lexer.l"
+#line 118 "src/lexer.l"
 { printLexeme(yytext, "PRINT"); incrementColumnCounter(yyleng); return PRINT; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 128 "src/lexer.l"
+#line 119 "src/lexer.l"
 { printLexeme(yytext, "READ"); incrementColumnCounter(yyleng); return READ; }
 	YY_BREAK
 
@@ -959,53 +950,53 @@ YY_RULE_SETUP
 
 case 10:
 YY_RULE_SETUP
-#line 134 "src/lexer.l"
-{ yylval = TYPE_INT; printLexeme(yytext, "TYPE (TYPE_INT)"); incrementColumnCounter(yyleng); return TYPE; }
+#line 125 "src/lexer.l"
+{ yylval.num = TYPE_INT; printLexeme(yytext, "TYPE (TYPE_INT)"); incrementColumnCounter(yyleng); return TYPE; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 135 "src/lexer.l"
-{ yylval = TYPE_FLOAT; printLexeme(yytext, "TYPE (TYPE_FLOAT)"); incrementColumnCounter(yyleng); return TYPE; }
+#line 126 "src/lexer.l"
+{ yylval.num = TYPE_FLOAT; printLexeme(yytext, "TYPE (TYPE_FLOAT)"); incrementColumnCounter(yyleng); return TYPE; }
 	YY_BREAK
 
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Relational Operators −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 
 case 12:
 YY_RULE_SETUP
-#line 141 "src/lexer.l"
-{ yylval = RELOP_LE; printLexeme(yytext, "RELOP (RELOP_LE)"); incrementColumnCounter(yyleng); return RELOP; }
+#line 132 "src/lexer.l"
+{ yylval.num = RELOP_LE; printLexeme(yytext, "RELOP (RELOP_LE)"); incrementColumnCounter(yyleng); return RELOP; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 142 "src/lexer.l"
-{ yylval = RELOP_GE; printLexeme(yytext, "RELOP (RELOP_GE)"); incrementColumnCounter(yyleng); return RELOP; }
+#line 133 "src/lexer.l"
+{ yylval.num = RELOP_GE; printLexeme(yytext, "RELOP (RELOP_GE)"); incrementColumnCounter(yyleng); return RELOP; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 143 "src/lexer.l"
-{ yylval = EQOP_NE; printLexeme(yytext, "EQOP (EQOP_NE)"); incrementColumnCounter(yyleng); return EQOP; }
+#line 134 "src/lexer.l"
+{ yylval.num = EQOP_NE; printLexeme(yytext, "EQOP (EQOP_NE)"); incrementColumnCounter(yyleng); return EQOP; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 144 "src/lexer.l"
-{ yylval = EQOP_EQ; printLexeme(yytext, "EQOP (EQOP_EQ)"); incrementColumnCounter(yyleng); return EQOP; }
+#line 135 "src/lexer.l"
+{ yylval.num = EQOP_EQ; printLexeme(yytext, "EQOP (EQOP_EQ)"); incrementColumnCounter(yyleng); return EQOP; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 145 "src/lexer.l"
-{ yylval = RELOP_LT; printLexeme(yytext, "RELOP (RELOP_LT)"); incrementColumnCounter(yyleng); return RELOP; }
+#line 136 "src/lexer.l"
+{ yylval.num = RELOP_LT; printLexeme(yytext, "RELOP (RELOP_LT)"); incrementColumnCounter(yyleng); return RELOP; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 146 "src/lexer.l"
-{ yylval = RELOP_GT; printLexeme(yytext, "RELOP (RELOP_GT)"); incrementColumnCounter(yyleng); return RELOP; }
+#line 137 "src/lexer.l"
+{ yylval.num = RELOP_GT; printLexeme(yytext, "RELOP (RELOP_GT)"); incrementColumnCounter(yyleng); return RELOP; }
 	YY_BREAK
 
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Assignment Operators −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 
 case 18:
 YY_RULE_SETUP
-#line 152 "src/lexer.l"
+#line 143 "src/lexer.l"
 { printLexeme(yytext, "ASSIGN_OP"); incrementColumnCounter(yyleng); return ASSIGN; }
 	YY_BREAK
 
@@ -1013,27 +1004,27 @@ YY_RULE_SETUP
 
 case 19:
 YY_RULE_SETUP
-#line 158 "src/lexer.l"
+#line 149 "src/lexer.l"
 { printLexeme(yytext, "ARITH_OP_ADD"); incrementColumnCounter(yyleng); return PLUS; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 159 "src/lexer.l"
+#line 150 "src/lexer.l"
 { printLexeme(yytext, "ARITH_OP_SUB"); incrementColumnCounter(yyleng); return MINUS; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 160 "src/lexer.l"
+#line 151 "src/lexer.l"
 { printLexeme(yytext, "ARITH_OP_POW"); incrementColumnCounter(yyleng); return POW; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 161 "src/lexer.l"
+#line 152 "src/lexer.l"
 { printLexeme(yytext, "ARITH_OP_MUL"); incrementColumnCounter(yyleng); return MULT; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 162 "src/lexer.l"
+#line 153 "src/lexer.l"
 { printLexeme(yytext, "ARITH_OP_DIV"); incrementColumnCounter(yyleng); return DIV; }
 	YY_BREAK
 
@@ -1041,17 +1032,17 @@ YY_RULE_SETUP
 
 case 24:
 YY_RULE_SETUP
-#line 168 "src/lexer.l"
+#line 159 "src/lexer.l"
 { printLexeme(yytext, "AND"); incrementColumnCounter(yyleng); return AND; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 169 "src/lexer.l"
+#line 160 "src/lexer.l"
 { printLexeme(yytext, "OR"); incrementColumnCounter(yyleng); return OR; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 170 "src/lexer.l"
+#line 161 "src/lexer.l"
 { printLexeme(yytext, "NOT"); incrementColumnCounter(yyleng); return NOT; }
 	YY_BREAK
 
@@ -1059,32 +1050,32 @@ YY_RULE_SETUP
 
 case 27:
 YY_RULE_SETUP
-#line 176 "src/lexer.l"
+#line 167 "src/lexer.l"
 { printLexeme(yytext, "PUNCT_SEMICOLON"); incrementColumnCounter(yyleng); return PUNCT_SEMICOLON; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 177 "src/lexer.l"
+#line 168 "src/lexer.l"
 { printLexeme(yytext, "PUNCT_COMMA"); incrementColumnCounter(yyleng); return PUNCT_COMMA; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 178 "src/lexer.l"
+#line 169 "src/lexer.l"
 { printLexeme(yytext, "PUNCT_OPEN_PAREN"); incrementColumnCounter(yyleng); return PUNCT_OPEN_PAREN; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 179 "src/lexer.l"
+#line 170 "src/lexer.l"
 { printLexeme(yytext, "PUNCT_CLOSE_PAREN"); incrementColumnCounter(yyleng); return PUNCT_CLOSE_PAREN; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 180 "src/lexer.l"
+#line 171 "src/lexer.l"
 { printLexeme(yytext, "PUNCT_OPEN_BRACE"); incrementColumnCounter(yyleng); return PUNCT_OPEN_BRACE; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 181 "src/lexer.l"
+#line 172 "src/lexer.l"
 { printLexeme(yytext, "PUNCT_CLOSE_BRACE"); incrementColumnCounter(yyleng); return PUNCT_CLOSE_BRACE; }
 	YY_BREAK
 
@@ -1092,33 +1083,33 @@ YY_RULE_SETUP
 
 case 33:
 YY_RULE_SETUP
-#line 187 "src/lexer.l"
-{ insertTable(yytext, "ID", yylineno, column_number); printLexeme(yytext, "ID"); incrementColumnCounter(yyleng); return ID; }
+#line 178 "src/lexer.l"
+{ yylval.str = strdup(yytext); insertTable(yytext, "ID", yylineno, column_number); printLexeme(yytext, "ID"); incrementColumnCounter(yyleng); return ID; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 189 "src/lexer.l"
-{ yylval = atof(yytext); printLexeme(yytext, "FLOAT_LITERAL"); incrementColumnCounter(yyleng); return FLOAT_LITERAL; }
+#line 180 "src/lexer.l"
+{ yylval.num = atof(yytext); printLexeme(yytext, "FLOAT_LITERAL"); incrementColumnCounter(yyleng); return FLOAT_LITERAL; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 191 "src/lexer.l"
-{ yylval = atoi(yytext); printLexeme(yytext, "INTEGER_LITERAL"); incrementColumnCounter(yyleng); return INTEGER_LITERAL; }
+#line 182 "src/lexer.l"
+{ yylval.num = atoi(yytext); printLexeme(yytext, "INTEGER_LITERAL"); incrementColumnCounter(yyleng); return INTEGER_LITERAL; }
 	YY_BREAK
 
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Errors −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 
 case 36:
 YY_RULE_SETUP
-#line 197 "src/lexer.l"
+#line 188 "src/lexer.l"
 { printLexeme(yytext, "LEXICAL_ERROR"); incrementColumnCounter(yyleng); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 199 "src/lexer.l"
+#line 190 "src/lexer.l"
 ECHO;
 	YY_BREAK
-#line 1122 "bin/lexer.c"
+#line 1113 "bin/lexer.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2135,7 +2126,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 199 "src/lexer.l"
+#line 190 "src/lexer.l"
 
 
 void printSymbolTable() {

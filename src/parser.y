@@ -7,13 +7,25 @@ int yylex(void);
 
 void yyerror(const char *s);
 
-/* Forward declaration of Symbol struct and searchTable function from lexer */
-typedef struct simbolo Symbol;
-extern Symbol* searchTable(const char* lexeme);
-
 %}
 
-%define api.value.type {double} /*Para indicar que lidaremos com double*/
+%code requires {
+typedef struct simbolo {
+    int pos;
+    char *lexeme;
+    char *tokenClass;
+    int line;
+    int column;
+    double value;
+    struct simbolo *next;
+} Symbol;
+extern Symbol* searchTable(const char* lexeme);
+}
+
+%union {
+    double num;
+    char *str;
+}
 
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−− Lexer Tokens −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 
@@ -23,10 +35,10 @@ extern Symbol* searchTable(const char* lexeme);
 %token PRINT
 %token READ
 
-%token TYPE
+%token <num> TYPE
 
-%token RELOP
-%token EQOP
+%token <num> RELOP
+%token <num> EQOP
 %token AND
 %token OR
 %token NOT
@@ -46,9 +58,11 @@ extern Symbol* searchTable(const char* lexeme);
 %token PUNCT_OPEN_BRACE
 %token PUNCT_CLOSE_BRACE
 
-%token ID
-%token INTEGER_LITERAL
-%token FLOAT_LITERAL
+%token <str> ID
+%token <num> INTEGER_LITERAL
+%token <num> FLOAT_LITERAL
+
+%type <num> id_decl assign_stmt primary_expr literal expr
 
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Definição de Precedência −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 
@@ -177,7 +191,7 @@ expr
   | expr DIV expr { $$ = $1 / $3; }
 
   | MINUS expr %prec UMINUS { $$ = -$2; }
-  | NOT expr %prec NOT { $$ = ~$2; }
+  | NOT expr %prec NOT { $$ = !$2; }
 
   | primary_expr
   ;

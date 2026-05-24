@@ -44,6 +44,21 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 12 "src/parser.y"
+
+typedef struct simbolo {
+    int pos;
+    char *lexeme;
+    char *tokenClass;
+    int line;
+    int column;
+    double value;
+    struct simbolo *next;
+} Symbol;
+extern Symbol* searchTable(const char* lexeme);
+
+#line 62 "bin/parser.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -87,7 +102,17 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef double YYSTYPE;
+union YYSTYPE
+{
+#line 25 "src/parser.y"
+
+    double num;
+    char *str;
+
+#line 113 "bin/parser.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

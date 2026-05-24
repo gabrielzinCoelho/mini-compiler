@@ -536,10 +536,10 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    64,    64,    68,    69,    73,    74,    75,    91,    95,
-      99,   100,   104,   105,   109,   113,   114,   115,   119,   120,
-     124,   126,   127,   129,   130,   132,   133,   135,   136,   138,
-     139,   141
+       0,    82,    82,    86,    87,    91,    92,    93,   109,   113,
+     117,   118,   122,   123,   138,   142,   153,   154,   158,   159,
+     163,   173,   174,   176,   177,   187,   188,   190,   191,   193,
+     194,   196
 };
 #endif
 
@@ -1147,8 +1147,141 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
+  case 12: /* id_decl: ID  */
+#line 122 "src/parser.y"
+       { printf("Declarando variavel: %s\n", (yyvsp[0].str)); (yyval.num) = 0.0; }
+#line 1154 "bin/parser.c"
+    break;
 
-#line 1152 "bin/parser.c"
+  case 13: /* id_decl: ID ASSIGN expr  */
+#line 123 "src/parser.y"
+                   { 
+      printf("Atribuindo valor na declaracao de: %s\n", (yyvsp[-2].str));
+      Symbol *sym = searchTable((yyvsp[-2].str));
+      if (sym) {
+          sym->value = (yyvsp[0].num);
+          printf("  Inicializado com valor: %g\n", (yyvsp[0].num));
+          (yyval.num) = (yyvsp[0].num);
+      } else {
+          printf("  Nao encontrado na tabela de simbolos!\n");
+          (yyval.num) = 0.0;
+      }
+  }
+#line 1171 "bin/parser.c"
+    break;
+
+  case 14: /* assign_stmt: expr PUNCT_SEMICOLON  */
+#line 138 "src/parser.y"
+                         { printf("Resultado da expressao: %g\n", (yyvsp[-1].num)); }
+#line 1177 "bin/parser.c"
+    break;
+
+  case 15: /* primary_expr: ID  */
+#line 142 "src/parser.y"
+       { 
+      printf("Consultando tabela de simbolos para: %s\n", (yyvsp[0].str));
+      Symbol *sym = searchTable((yyvsp[0].str));
+      if (sym) {
+          printf("  Encontrado na posicao %d, valor: %g\n", sym->pos, sym->value);
+          (yyval.num) = sym->value;
+      } else {
+          printf("  Nao encontrado!\n");
+          (yyval.num) = 0.0;
+      }
+  }
+#line 1193 "bin/parser.c"
+    break;
+
+  case 17: /* primary_expr: PUNCT_OPEN_PAREN expr PUNCT_CLOSE_PAREN  */
+#line 154 "src/parser.y"
+                                            { (yyval.num) = (yyvsp[-1].num); }
+#line 1199 "bin/parser.c"
+    break;
+
+  case 20: /* expr: ID ASSIGN expr  */
+#line 163 "src/parser.y"
+                   { 
+      printf("Assigning to %s: %g\n", (yyvsp[-2].str), (yyvsp[0].num));
+      Symbol *sym = searchTable((yyvsp[-2].str));
+      if (sym) {
+          sym->value = (yyvsp[0].num);
+          printf("  Atualizado na tabela de simbolos (posicao %d)\n", sym->pos);
+      }
+      (yyval.num) = (yyvsp[0].num); 
+  }
+#line 1213 "bin/parser.c"
+    break;
+
+  case 21: /* expr: expr OR expr  */
+#line 173 "src/parser.y"
+                 { (yyval.num) = (yyvsp[-2].num) || (yyvsp[0].num); }
+#line 1219 "bin/parser.c"
+    break;
+
+  case 22: /* expr: expr AND expr  */
+#line 174 "src/parser.y"
+                  { (yyval.num) = (yyvsp[-2].num) && (yyvsp[0].num); }
+#line 1225 "bin/parser.c"
+    break;
+
+  case 23: /* expr: expr EQOP expr  */
+#line 176 "src/parser.y"
+                   { (yyval.num) = (yyvsp[-2].num) == (yyvsp[0].num); }
+#line 1231 "bin/parser.c"
+    break;
+
+  case 24: /* expr: expr RELOP expr  */
+#line 177 "src/parser.y"
+                    { 
+      switch((int)(yyvsp[-1].num)) {
+          case 1: (yyval.num) = (yyvsp[-2].num) <= (yyvsp[0].num); break;  /* RELOP_LE */
+          case 2: (yyval.num) = (yyvsp[-2].num) >= (yyvsp[0].num); break;  /* RELOP_GE */
+          case 3: (yyval.num) = (yyvsp[-2].num) < (yyvsp[0].num); break;   /* RELOP_LT */
+          case 4: (yyval.num) = (yyvsp[-2].num) > (yyvsp[0].num); break;   /* RELOP_GT */
+          default: (yyval.num) = 0;
+      }
+  }
+#line 1245 "bin/parser.c"
+    break;
+
+  case 25: /* expr: expr PLUS expr  */
+#line 187 "src/parser.y"
+                   { (yyval.num) = (yyvsp[-2].num) + (yyvsp[0].num); }
+#line 1251 "bin/parser.c"
+    break;
+
+  case 26: /* expr: expr MINUS expr  */
+#line 188 "src/parser.y"
+                    { (yyval.num) = (yyvsp[-2].num) - (yyvsp[0].num); }
+#line 1257 "bin/parser.c"
+    break;
+
+  case 27: /* expr: expr MULT expr  */
+#line 190 "src/parser.y"
+                   { (yyval.num) = (yyvsp[-2].num) * (yyvsp[0].num); }
+#line 1263 "bin/parser.c"
+    break;
+
+  case 28: /* expr: expr DIV expr  */
+#line 191 "src/parser.y"
+                  { (yyval.num) = (yyvsp[-2].num) / (yyvsp[0].num); }
+#line 1269 "bin/parser.c"
+    break;
+
+  case 29: /* expr: MINUS expr  */
+#line 193 "src/parser.y"
+                            { (yyval.num) = -(yyvsp[0].num); }
+#line 1275 "bin/parser.c"
+    break;
+
+  case 30: /* expr: NOT expr  */
+#line 194 "src/parser.y"
+                       { (yyval.num) = !(yyvsp[0].num); }
+#line 1281 "bin/parser.c"
+    break;
+
+
+#line 1285 "bin/parser.c"
 
       default: break;
     }
@@ -1341,7 +1474,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 144 "src/parser.y"
+#line 199 "src/parser.y"
 
 
 void yyerror(const char *s) {
