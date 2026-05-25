@@ -10,6 +10,7 @@ void yyerror(const char *s);
 %}
 
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−− Lexer Tokens −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
+%define parse.error verbose
 
 %token IF
 %token ELSE
@@ -222,7 +223,9 @@ expr
 %%
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Error: %s\n", s);
+    extern int yylineno;
+    extern int column_number;
+    fprintf(stderr, "Error at line %d, column %d: %s\n", yylineno, column_number, s);
 }
 
 extern void printSymbolTable(); // func do lexer pra printar a tabela
