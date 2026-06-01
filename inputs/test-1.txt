@@ -1,9 +1,0 @@
-// Teste básico com palavras-chave e identificadores
-if x
-  print y // mostrar valor de y (saldo da conta)
-else
-  read z
-  
-/* Comentário multilinha 
-   para demonstrar o lexer */
-while count
