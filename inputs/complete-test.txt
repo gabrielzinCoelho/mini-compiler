@@ -1,0 +1,26 @@
+int g_var = 42 ,g_vazio;
+
+int sem_parametro () {
+    return;
+}
+
+float test_completo (int x , boolean b) {
+    float y = 2.5;
+    string s = "Resultado: ";
+
+    read (x);
+
+    if (x > 0 && ~b) {
+        y = x * (y + 1.0) / 2.0;
+        print (s , y);
+    } else if (x == 0) {
+        sem_parametro () ;
+        return -1.0;
+    } else {
+        while (b || x < -5) {
+            x = x + 1;
+        }
+    }
+
+    return y )
+}
