@@ -2,12 +2,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "symtable.h"
 
 int yylex(void);
+/* variável para carregar o tipo corrente durante declarações */
+static int current_decl_type = 0;
 
 void yyerror(const char *s);
 
 %}
+
+%union {
+    int   ival;   /* valor inteiro: TYPE_INT, RELOP_LE, etc. */
+    char *sval;       /* lexema de um identificador              */
+    struct {
+        int tipo;     /* tipo semântico do resultado (SYM_TYPE_*)*/
+    } expr;
+}
+
+/* associar o tipo semântico a cada não-terminal de expressão */
+%type <expr_info> expr primary_expr
 
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−− Lexer Tokens −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 %define parse.error verbose
@@ -229,8 +243,6 @@ void yyerror(const char *s) {
     fprintf(stderr, "Error at line %d, column %d: %s\n", yylineno, column_number - yyleng, s);
 }
 
-extern void printSymbolTable(); // func do lexer pra printar a tabela
-extern int symbol_count;
 extern int lexical_error_count;
 
 int main(int argc, char **argv) {
