@@ -28,6 +28,7 @@
 #define SYM_FUNC  1   /* função */
 #define SYM_PARAM 2   /* parâmetro formal */
 
+// * listinha encadeada
 typedef struct Symbol {
     char        *name;          /* lexema do identificador          */
     int          type;          /* SYM_TYPE_*                       */

@@ -22,11 +22,12 @@ void open_scope(void) {
     if (!s) { perror("open_scope: malloc"); exit(1); }
     s->symbols     = NULL;
     s->parent      = current_scope;
-    s->level       = current_scope ? current_scope->level + 1 : 0;
+    s->level       = current_scope ? current_scope->level + 1 : 0; // pq isso?
     current_scope  = s;
 }
 
-//  desempilha e libera o escopo corrente
+// * limpa todos os símbolos
+// * atualiza o escopo atual
 void close_scope(void) {
     if (!current_scope) {
         fprintf(stderr, "Erro interno: close_scope sem escopo aberto\n");
@@ -56,7 +57,7 @@ Symbol *sym_declare(const char *name, int type, int category,
         return NULL;
     }
 
-    /* verifica redeclaração NO MESMO escopo */
+    // * percorre os símbolos, faz um strcmp e da erro se ja existe um symbol com aquele name
     for (Symbol *s = current_scope->symbols; s != NULL; s = s->next) {
         if (strcmp(s->name, name) == 0) {
             fprintf(stderr,
@@ -71,6 +72,7 @@ Symbol *sym_declare(const char *name, int type, int category,
     Symbol *sym = (Symbol *) malloc(sizeof(Symbol));
     if (!sym) { perror("sym_declare: malloc"); exit(1); }
 
+
     sym->name        = strdup(name);
     sym->type        = type;
     sym->category    = category;
@@ -78,7 +80,7 @@ Symbol *sym_declare(const char *name, int type, int category,
     sym->line        = line;
     sym->column      = column;
 
-    /* insere no início da lista (mais rápido, ordem de declaração não importa) */
+    // * insere no início da lista (mais rápido, ordem de declaração não importa)
     sym->next              = current_scope->symbols;
     current_scope->symbols = sym;
 
