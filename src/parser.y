@@ -12,6 +12,10 @@ void yyerror(const char *s);
 
 %}
 
+// !!
+// !! REMOVER TIPOS BOOLEAN E STRING (TIROU PONTO DA ÚLTIMA)
+// !!
+
 %union {
     int   ival;   /* valor inteiro: TYPE_INT, RELOP_LE, etc. */
     char *sval;       /* lexema de um identificador              */
@@ -20,8 +24,9 @@ void yyerror(const char *s);
     } expr;
 }
 
+// ? que porra é essa aqui?
 /* associar o tipo semântico a cada não-terminal de expressão */
-%type <expr_info> expr primary_expr
+%type <expr> expr primary_expr
 
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−− Lexer Tokens −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 %define parse.error verbose
@@ -35,8 +40,10 @@ void yyerror(const char *s);
 
 %token TYPE
 
-%token RELOP
-%token EQOP
+// TODO: conferir se falta passar <ival> pra algum token
+
+%token <ival> RELOP
+%token <ival> EQOP
 %token AND
 %token OR
 %token NOT
@@ -56,11 +63,11 @@ void yyerror(const char *s);
 %token PUNCT_OPEN_BRACE
 %token PUNCT_CLOSE_BRACE
 
-%token ID
+%token <sval> ID
 %token INTEGER_LITERAL
 %token FLOAT_LITERAL
-%token STR_LITERAL
-%token BOOL_LITERAL
+%token <sval> STR_LITERAL
+%token <ival> BOOL_LITERAL
 
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Definição de Precedência −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 
@@ -92,7 +99,15 @@ global_decl
   ;
 
 func_decl
-  : TYPE ID PUNCT_OPEN_PAREN opt_param_list PUNCT_CLOSE_PAREN block
+  : TYPE ID PUNCT_OPEN_PAREN 
+    {
+      // * registra a função no escopo global antes de abrir o escopo dela
+      // ? pq $2? quando usar $2, $1 ou $3?
+      // ? onde a gente atualiza current_decl_type? oq isso significa?
+      sym_declare($2.sval, current_decl_type, SYM_FUNC,
+                  yylineno, column_number);
+      open_scope();   // * escopo dos parâmetros + corpo
+    } opt_param_list PUNCT_CLOSE_PAREN block {close_scope();}
   ;
 
 opt_param_list
@@ -145,11 +160,11 @@ opt_expr
   ;
 
 block
-  : PUNCT_OPEN_BRACE stmt_list PUNCT_CLOSE_BRACE
+  : PUNCT_OPEN_BRACE {open_scope();} stmt_list PUNCT_CLOSE_BRACE {close_scope();}
   ;
 
 var_decl
-  : TYPE id_list PUNCT_SEMICOLON
+  : TYPE {current_decl_type = $1;} id_list PUNCT_SEMICOLON
   ;
 
 id_list
@@ -157,9 +172,24 @@ id_list
   | id_decl
   ;
 
+  // int TESTE;
+  // * int a = 5.0; -> float a = 5.0;
+  // * float a = 5; -> float a = 5.0; 
+  // ! conferir se tá certo
 id_decl
-  : ID 
+  : ID {sym_declare($1.sval, current_decl_type, SYM_VAR, yyline, column_number);}
   | ID ASSIGN expr 
+    {Symbol *s = sym_declare($1.sval, current_decl_type, SYM_VAR, yylineno, column_number);
+      if(s && s->type != $3.expr.tipo) {
+        if !((s->type == SYM_TYPE_INT && $3.expr.tipo == SYM_TYPE_FLOAT) || (s->type == SYM_TYPE_FLOAT && $3.expr.tipo == SYM_TYPE_INT)){
+          fprintf(stderr,
+                "Erro semântico linha %d: tipo incompatível na inicialização de '%s' "
+                "(esperado '%s', recebeu '%s')\n",
+                yylineno, s->name,
+                sym_type_str(tipo_var), sym_type_str(tipo_expr));
+        }    
+      }
+    }
   ;
 
 assign_stmt
@@ -198,8 +228,9 @@ read_list
   | ID
   ;
 
+  // ! fazer!
 primary_expr
-  : ID
+  : ID {sym_lookup();} // ! CORRIGIR parâmetros e como pegar
   | literal
   | PUNCT_OPEN_PAREN expr PUNCT_CLOSE_PAREN
   | func_call
@@ -212,6 +243,7 @@ literal
   | BOOL_LITERAL
   ;
 
+  // ! conferir se precisa tratar
 expr
   : ID ASSIGN expr
   
@@ -254,6 +286,8 @@ int main(int argc, char **argv) {
             return 1;
         }
     }
+
+    sym_init();
     // roda o parsing, que por sua vez roda o lex
     int has_errors = (yyparse() != 0) || (lexical_error_count > 0);
 
@@ -261,9 +295,7 @@ int main(int argc, char **argv) {
       printf("Aceita\n");
     }
 
-    if (symbol_count > 1) {
-      printSymbolTable();
-    }
+    sym_print();
 
     return has_errors ? 1 : 0;
 }
