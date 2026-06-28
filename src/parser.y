@@ -284,7 +284,7 @@ expr
   | MINUS expr %prec UMINUS 
   | NOT expr %prec NOT 
 
-  | primary_expr
+  | primary_expr { $$.tipo = $1.tipo; }
   ;
 
   use_id
