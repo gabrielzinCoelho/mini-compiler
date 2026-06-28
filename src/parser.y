@@ -12,9 +12,7 @@ void yyerror(const char *s);
 
 %}
 
-// !!
 // !! REMOVER TIPOS BOOLEAN E STRING (TIROU PONTO DA ÚLTIMA)
-// !!
 
 %union {
     int   ival;   /* valor inteiro: TYPE_INT, RELOP_LE, etc. */
@@ -103,7 +101,6 @@ func_decl
       // atualiza o tipo
       current_decl_type = $1.ival;
       // * registra a função no escopo global antes de abrir o escopo dela
-      // ? onde a gente atualiza current_decl_type? oq isso significa?
       sym_declare($2.sval, current_decl_type, SYM_FUNC,
                   yylineno, column_number);
       open_scope();   // * escopo dos parâmetros + corpo
