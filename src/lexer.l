@@ -9,11 +9,10 @@
 
 // yylval é sendo importado pelo parser agora.
 int column_number = 1;
-// comentário de teste
+
 #define TYPE_INT 1
 #define TYPE_FLOAT 2
 #define TYPE_BOOL 3
-#define TYPE_STR 4
 #define BOOL_LITERAL_TRUE 1
 #define BOOL_LITERAL_FALSE 2
 #define EQOP_NE 1
@@ -51,7 +50,6 @@ newline                 [\n]
 digit                   [0-9]
 float                   ({digit}+\.{digit}*|\.{digit}+)
 integer                 {digit}+
-literalStr              \"(\\.|[^\"\n])*\"
 identifier              [a-zA-Z]([a-zA-Z0-9_]*[a-zA-Z0-9])? 
 singleLineComment       \/\/[^\n]*
 multilineComment        \/\*([^*]|\*+[^*/])*\*+\/
@@ -91,7 +89,6 @@ false   { yylval.ival = BOOL_LITERAL_FALSE; printLexeme(yytext, "BOOL_LITERAL (B
 int     { yylval.ival = TYPE_INT; printLexeme(yytext, "TYPE (TYPE_INT)"); incrementColumnCounter(yyleng); return TYPE; }
 float   { yylval.ival = TYPE_FLOAT; printLexeme(yytext, "TYPE (TYPE_FLOAT)"); incrementColumnCounter(yyleng); return TYPE; }
 boolean { yylval.ival = TYPE_BOOL; printLexeme(yytext, "TYPE (TYPE_BOOL)"); incrementColumnCounter(yyleng); return TYPE; }
-string  { yylval.ival = TYPE_STR; printLexeme(yytext, "TYPE (TYPE_STR)"); incrementColumnCounter(yyleng); return TYPE; }
 
 %{
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Relational Operators −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
@@ -148,8 +145,6 @@ string  { yylval.ival = TYPE_STR; printLexeme(yytext, "TYPE (TYPE_STR)"); increm
 {float}   { printLexeme(yytext, "FLOAT_LITERAL"); incrementColumnCounter(yyleng); return FLOAT_LITERAL; }
 
 {integer} { printLexeme(yytext, "INTEGER_LITERAL"); incrementColumnCounter(yyleng); return INTEGER_LITERAL; }
-
-{literalStr} { yylval.sval = strdup(yytext); printLexeme(yytext, "STR_LITERAL"); incrementColumnCounter(yyleng); return STR_LITERAL; }
 
 %{
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−− Errors −−−−−−−−−−−−−−−−−−−−−−−−−−−−− */

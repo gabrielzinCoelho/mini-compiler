@@ -20,8 +20,7 @@
 #define SYM_TYPE_INT    1
 #define SYM_TYPE_FLOAT  2
 #define SYM_TYPE_BOOL   3
-#define SYM_TYPE_STR    4
-#define SYM_TYPE_VOID   5   /* para funções sem retorno */
+#define SYM_TYPE_VOID   4   /* para funções sem retorno */
 
 // Categorias de símbolo
 #define SYM_VAR   0   /* variável local ou global */
