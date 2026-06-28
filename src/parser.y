@@ -9,6 +9,7 @@ int yylex(void);
 static int current_decl_type = 0;
 
 void yyerror(const char *s);
+int tipos_compativeis(int, int);
 
 %}
 
@@ -192,11 +193,7 @@ id_decl
   : decl_var_id
   | decl_var_id ASSIGN expr 
     {
-      int compativel =
-                ($1.type == $3.expr.tipo) ||
-                ($1.type == SYM_TYPE_INT   && $3.expr.tipo == SYM_TYPE_FLOAT) ||
-                ($1.type == SYM_TYPE_FLOAT && $3.expr.tipo == SYM_TYPE_INT);
-      if(!compativel){
+      if(!tipos_compativeis($1.type, $3.expr.tipo)){
           fprintf(stderr,
                 "Erro semântico linha %d: tipo incompatível na inicialização de '%s' "
                 "(esperado '%s', recebeu '%s')\n",
@@ -260,11 +257,7 @@ expr
   : use_id ASSIGN expr
     {
       // * verificação de tipo
-      int compativel =
-          ($1.tipo == $3.expr.tipo) ||
-          ($1.tipo == SYM_TYPE_INT && $3.expr.tipo == SYM_TYPE_FLOAT) ||
-          ($1.tipo == SYM_TYPE_FLOAT && $3.expr.tipo == SYM_TYPE_INT);
-      if (!compativel) {
+      if (!tipos_compativeis($1.type, $3.expr.tipo)) {
           fprintf(stderr,
           "Erro semântico linha %d: tipo incompatível na atribuição de '%s' "
           "(esperado '%s', recebeu '%s')\n",
@@ -349,6 +342,12 @@ expr
   ;
 
 %%
+
+int tipos_compativeis(int tipo_esperado, int tipo_recebido) {
+  return tipo_esperado == tipo_recebido ||
+       (tipo_esperado == SYM_TYPE_INT && tipo_recebido == SYM_TYPE_FLOAT) ||
+       (tipo_esperado == SYM_TYPE_FLOAT && tipo_recebido == SYM_TYPE_INT);
+}
 
 void yyerror(const char *s) {
     extern int yylineno;
