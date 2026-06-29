@@ -135,8 +135,10 @@ float   { yylval.ival = TYPE_FLOAT; printLexeme(yytext, "TYPE (TYPE_FLOAT)"); in
 
 {identifier} { yylval.sval = strdup(yytext); printLexeme(yytext, "ID"); incrementColumnCounter(yyleng); return ID; }
 
+// passar o valor de fato, como yylval.ival=atoi(yytext) (pagina 196 apostila terra)
 {float}   { printLexeme(yytext, "FLOAT_LITERAL"); incrementColumnCounter(yyleng); return FLOAT_LITERAL; }
 
+// passar o valor de fato, como yylval.ival=atoi(yytext) (pagina 196 apostila terra)
 {integer} { printLexeme(yytext, "INTEGER_LITERAL"); incrementColumnCounter(yyleng); return INTEGER_LITERAL; }
 
 %{
