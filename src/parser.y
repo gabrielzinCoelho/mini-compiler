@@ -107,7 +107,7 @@ global_decl
   ;
 
 
-// TO-DO: 
+// TO-DO: OK
 func_decl
   : TYPE {
       // atualiza o tipo
@@ -116,7 +116,8 @@ func_decl
     // * registra a função no escopo global antes de abrir o escopo dela
     decl_func_id PUNCT_OPEN_PAREN 
     {
-      open_scope();   // * escopo dos parâmetros + corpo
+      generate_label($2.name);  // * gera o label de entrada da função
+      open_scope();             // * escopo dos parâmetros + corpo
     } 
     opt_param_list PUNCT_CLOSE_PAREN no_scope_block 
     {
