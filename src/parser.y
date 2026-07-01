@@ -15,9 +15,11 @@ static int current_decl_type = 0;
 
 /* offset */
 static int offset = 0;
+static int label_counter = 0;
 
 void yyerror(const char *s);
 int tipos_compativeis(int, int);
+char *new_label();
 
 %}
 
@@ -410,6 +412,17 @@ void yyerror(const char *s) {
     extern int column_number;
     extern int yyleng;
     fprintf(stderr, "Error at line %d, column %d: %s\n", yylineno, column_number - yyleng, s);
+}
+
+char *new_label() {
+    char *label = malloc(20);
+
+    if (label == NULL) {
+        return NULL;
+    }
+
+    sprintf(label, "L%d", label_counter++);
+    return label;
 }
 
 extern int lexical_error_count;
