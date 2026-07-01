@@ -261,12 +261,12 @@ read_stmt
   ;
 
 read_list
-  : read_list PUNCT_COMMA use_id
-  | use_id
+  : read_list PUNCT_COMMA use_var_id
+  | use_var_id
   ;
 
 primary_expr
-  : use_id { $$.tipo = $1.tipo; $$.code = $1.name; }
+  : use_var_id { $$.tipo = $1.tipo; $$.code = $1.name; }
   | literal { $$.tipo = $1.tipo; $$.code = NULL; }
   | PUNCT_OPEN_PAREN expr PUNCT_CLOSE_PAREN { $$.tipo = $2.tipo; $$.code = $2.code; }
   | func_call { $$.tipo = $1.tipo; $$.code = $1.code; }
@@ -278,7 +278,7 @@ literal
   ;
 
 expr
-  : use_id ASSIGN expr
+  : use_var_id ASSIGN expr
     {
       // * verificação de tipo
       if (!tipos_compativeis($1.type, $3.expr.tipo)) {
