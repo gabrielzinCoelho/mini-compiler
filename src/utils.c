@@ -4,6 +4,8 @@
 
 #include "utils.h"
 
+
+//retorna um valor inteiro representando a hierarquia de tipos
 static int type_rank(int type) {
     switch (type) {
         case SYM_TYPE_BOOL:
@@ -17,6 +19,7 @@ static int type_rank(int type) {
     }
 }
 
+// retorna o menor limite superior entre dois tipos na hierarquia: boolean -> int -> float
 int max(int t1, int t2) {
     int r1 = type_rank(t1);
     int r2 = type_rank(t2);
@@ -34,6 +37,8 @@ int max(int t1, int t2) {
     return (r1 >= r2) ? t1 : t2;
 }
 
+// Faz widening de um address textual quando t1 < t2.
+// t1 == t2 retorna o próprio addr
 char *widen(char *addr, int t1, int t2) {
     int r1 = type_rank(t1);
     int r2 = type_rank(t2);
