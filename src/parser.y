@@ -29,6 +29,10 @@ int tipos_compativeis(int, int);
         char* code // codigo de fato da expr  
     } expr;
     struct {
+        char * next; // label para instrução seguinte ao statement
+        char* code // codigo do stmt  
+    } stmt;
+    struct {
         int tipo; /* tipo semântico do resultado (SYM_TYPE_*)*/
         char* name // lexema do id para depuração  
         int category // categoria do símbolo (SYM_VAR, SYM_FUNC, SYM_PARAM)
@@ -37,6 +41,8 @@ int tipos_compativeis(int, int);
 
 // * definimos os valores de %union usados por essas expressões
 %type <expr> expr primary_expr literal func_call
+
+%type <stmt> stmt
 
 %type <use_id> use_id use_func_id use_var_id decl_var_id decl_func_id decl_param_id
 
@@ -124,7 +130,7 @@ func_decl
       generate_label($2.name);  // * gera o label de entrada da função
       open_scope();             // * escopo dos parâmetros + corpo
     } 
-    opt_param_list PUNCT_CLOSE_PAREN no_scope_block 
+    opt_param_list PUNCT_CLOE_PAREN no_scope_block 
     {
       close_scope();
     }
