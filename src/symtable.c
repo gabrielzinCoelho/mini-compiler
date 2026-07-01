@@ -22,7 +22,7 @@ void open_scope(void) {
     if (!s) { perror("open_scope: malloc"); exit(1); }
     s->symbols     = NULL;
     s->parent      = current_scope;
-    s->level       = current_scope ? current_scope->level + 1 : 0; // pq isso?
+    s->level       = current_scope ? current_scope->level + 1 : 0;
     current_scope  = s;
 }
 
@@ -103,9 +103,7 @@ const char *sym_type_str(int type) {
         case SYM_TYPE_INT:   return "int";
         case SYM_TYPE_FLOAT: return "float";
         case SYM_TYPE_BOOL:  return "boolean";
-        case SYM_TYPE_STR:   return "string";
-        case SYM_TYPE_VOID:  return "void";
-        default:             return "?";
+        default:             return "";
     }
 }
 

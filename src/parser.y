@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "symtable.h"
+#include "temporary.h"
+#include "tac-generator.h"
 
 int yylex(void);
 
@@ -33,9 +35,11 @@ int tipos_compativeis(int, int);
 }
 
 // * definimos os valores de %union usados por essas expressões
-%type <expr> expr primary_expr literal
+%type <expr> expr primary_expr literal func_call
 
-%type <use_id> use_id func_call decl_var_id decl_func_id decl_param_id
+%type <use_id> use_id decl_var_id decl_func_id decl_param_id
+
+%type <ival> func_call_list opt_func_call_list
 
 /* −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−− Lexer Tokens −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−− */
 %define parse.error verbose
@@ -125,34 +129,47 @@ func_decl
     }
   ;
 
+// TO-DO: OK
 opt_param_list
   : param_list
   | %empty /* vazio */
   ;
 
+// TO-DO: OK
 param_list
   : param_list PUNCT_COMMA 
     TYPE { current_decl_type = $3.ival; } decl_param_id
   | TYPE { current_decl_type = $1.ival; } decl_param_id
   ;
 
+// TO-DO: OK
 func_call
-  : use_id
+  : use_id PUNCT_OPEN_PAREN opt_func_call_list PUNCT_CLOSE_PAREN
   {
+    Temporary *temp = temporary_new();
+    generate_call_assign((char *)temporary_get_name(temp), $1.name, $3);
+    
     $$.tipo = $1.tipo;
-    $$.name = $1.name;
-  } 
-  PUNCT_OPEN_PAREN opt_func_call_list PUNCT_CLOSE_PAREN
+    $$.code = (char *)temporary_get_name(temp);
+  }
   ;
 
 opt_func_call_list
-  : func_call_list
-  | %empty /* vazio */
+  : func_call_list { $$ = $1; }
+  | %empty { $$ = 0; }
   ;
 
 func_call_list
   : func_call_list PUNCT_COMMA expr
+  {
+    generate_param($3.code ? $3.code : "");
+    $$ = $1 + 1;
+  }
   | expr
+  {
+    generate_param($1.code ? $1.code : "");
+    $$ = 1;
+  }
   ;
 
 stmt_list
@@ -248,10 +265,10 @@ read_list
   ;
 
 primary_expr
-  : use_id { $$.tipo = $1.tipo; }
-  | literal { $$.tipo = $1.tipo; }
-  | PUNCT_OPEN_PAREN expr PUNCT_CLOSE_PAREN { $$.tipo = $2.tipo; }
-  | func_call { $$.tipo = $1.tipo; }
+  : use_id { $$.tipo = $1.tipo; $$.code = $1.name; }
+  | literal { $$.tipo = $1.tipo; $$.code = NULL; }
+  | PUNCT_OPEN_PAREN expr PUNCT_CLOSE_PAREN { $$.tipo = $2.tipo; $$.code = $2.code; }
+  | func_call { $$.tipo = $1.tipo; $$.code = $1.code; }
   ;
 
 literal
@@ -271,26 +288,26 @@ expr
           sym_type_str($1.tipo), sym_type_str($3.expr.tipo));
       }
       $$.tipo = $1.tipo;
-        
+      $$.code = $1.name;
     }
   
-  | expr OR expr
-  | expr AND expr
+  | expr OR expr { $$.tipo = SYM_TYPE_INT; $$.code = NULL; }
+  | expr AND expr { $$.tipo = SYM_TYPE_INT; $$.code = NULL; }
 
-  | expr EQOP expr
-  | expr RELOP expr 
+  | expr EQOP expr { $$.tipo = SYM_TYPE_INT; $$.code = NULL; }
+  | expr RELOP expr { $$.tipo = SYM_TYPE_INT; $$.code = NULL; }
 
-  | expr PLUS expr 
-  | expr MINUS expr 
+  | expr PLUS expr { $$.tipo = $1.tipo; $$.code = NULL; }
+  | expr MINUS expr { $$.tipo = $1.tipo; $$.code = NULL; }
 
-  | expr MULT expr 
-  | expr DIV expr 
-  | expr POW expr
+  | expr MULT expr { $$.tipo = $1.tipo; $$.code = NULL; }
+  | expr DIV expr { $$.tipo = $1.tipo; $$.code = NULL; }
+  | expr POW expr { $$.tipo = $1.tipo; $$.code = NULL; }
 
-  | MINUS expr %prec UMINUS 
-  | NOT expr %prec NOT 
+  | MINUS expr %prec UMINUS { $$.tipo = $2.tipo; $$.code = NULL; }
+  | NOT expr %prec NOT { $$.tipo = SYM_TYPE_INT; $$.code = NULL; }
 
-  | primary_expr { $$.tipo = $1.tipo; }
+  | primary_expr { $$.tipo = $1.tipo; $$.code = $1.code; }
   ;
 
   use_id
