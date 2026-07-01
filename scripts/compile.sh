@@ -34,7 +34,7 @@ echo "✓ lexer.c gerado em $BIN_DIR"
 # Passo 3: Compilar com gcc
 echo "[3/3] Compilando com gcc..."
 # Seguindo a instrução do professor: usando -lfl (para Linux)
-gcc -o "$BIN_DIR/main" "$BIN_DIR/parser.c" "$BIN_DIR/lexer.c" -lfl
+gcc -o "$BIN_DIR/main" "$BIN_DIR/parser.c" "$BIN_DIR/lexer.c" "$SRC_DIR/utils.c" -lfl
 
 # Nota: Se tiver um erro sobre "undefined reference to yyerror" no futuro,
 # pode ser necessário adicionar a flag -ly ou implementar yyerror no seu .y.
