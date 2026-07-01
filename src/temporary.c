@@ -6,6 +6,7 @@
 
 static unsigned long temporary_counter = 0;
 
+// gera um novo temporary com nome único baseado em um contador
 Temporary *temporary_new(void) {
     Temporary *temporary = (Temporary*)malloc(sizeof(Temporary));
     if (!temporary) {
@@ -18,6 +19,7 @@ Temporary *temporary_new(void) {
     return temporary;
 }
 
+// desalocala um temporary previamente alocado
 void temporary_free(Temporary *temporary) {
     if (!temporary) {
         return;
@@ -25,6 +27,7 @@ void temporary_free(Temporary *temporary) {
     free(temporary);
 }
 
+// retorna o nome do temporary
 const char *temporary_get_name(const Temporary *temporary) {
     return temporary ? temporary->name : NULL;
 }

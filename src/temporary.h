@@ -9,4 +9,4 @@ Temporary *temporary_new(void);
 void temporary_free(Temporary *temporary);
 const char *temporary_get_name(const Temporary *temporary);
 
-#endif /* TEMPORARY_H */
+#endif
