@@ -31,13 +31,14 @@ int tipos_compativeis(int, int);
     struct {
         int tipo; /* tipo semântico do resultado (SYM_TYPE_*)*/
         char* name // lexema do id para depuração  
+        int category // categoria do símbolo (SYM_VAR, SYM_FUNC, SYM_PARAM)
     } use_id;
 }
 
 // * definimos os valores de %union usados por essas expressões
 %type <expr> expr primary_expr literal func_call
 
-%type <use_id> use_id decl_var_id decl_func_id decl_param_id
+%type <use_id> use_id use_func_id use_var_id decl_var_id decl_func_id decl_param_id
 
 %type <ival> func_call_list opt_func_call_list
 
@@ -142,9 +143,9 @@ param_list
   | TYPE { current_decl_type = $1.ival; } decl_param_id
   ;
 
-// TO-DO: OK
+// TO-DO: OK - usa use_func_id para garantir que é uma função
 func_call
-  : use_id PUNCT_OPEN_PAREN opt_func_call_list PUNCT_CLOSE_PAREN
+  : use_func_id PUNCT_OPEN_PAREN opt_func_call_list PUNCT_CLOSE_PAREN
   {
     Temporary *temp = temporary_new();
     generate_call_assign((char *)temporary_get_name(temp), $1.name, $3);
@@ -318,10 +319,36 @@ expr
                   yylineno, $1.sval);
           $$.tipo = SYM_TYPE_INT;  //* tipo de recuperação para não propagar erro
           $$.name = $1.sval;
+          $$.category = -1;  /* categoria inválida */
       } else {
           $$.tipo = s->type;
           $$.name = s->name;
+          $$.category = s->category;
       }
+  }
+  ;
+
+  use_func_id
+  : use_id
+  {
+    /* Verifica se o identificador é realmente uma função */
+    if ($1.category != SYM_FUNC) {
+        fprintf(stderr, "Erro semântico linha %d: '%s' não é uma função\n",
+                yylineno, $1.name);
+    }
+    $$ = $1;
+  }
+  ;
+
+  use_var_id
+  : use_id
+  {
+    /* Verifica se o identificador é realmente uma variável */
+    if ($1.category != SYM_VAR && $1.category != SYM_PARAM) {
+        fprintf(stderr, "Erro semântico linha %d: '%s' não é uma variável\n",
+                yylineno, $1.name);
+    }
+    $$ = $1;
   }
   ;
 
