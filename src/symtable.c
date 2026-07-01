@@ -4,6 +4,8 @@
 #include <string.h>
 #include "symtable.h"
 
+extern int semantic_error_count;
+
 Scope *current_scope = NULL;
 
 // cria o escopo global (nível 0)
@@ -64,6 +66,7 @@ Symbol *sym_declare(const char *name, int type, int category,
                 "Erro semântico na linha %d, coluna %d: "
                 "'%s' já declarado neste escopo (declaração anterior na linha %d)\n",
                 line, column, name, s->line);
+            semantic_error_count++;
             return NULL;
         }
     }
