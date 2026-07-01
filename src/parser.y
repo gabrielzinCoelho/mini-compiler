@@ -10,11 +10,13 @@
 
 int yylex(void);
 
+extern int column_number;
+extern int lexical_error_count;
+extern int yylineno;
+
 static int current_decl_type = 0;
 static int label_counter = 0;
-
-void yyerror(const char *s);
-int tipos_compativeis(int, int);
+int semantic_error_count = 0;
 
 #define EQOP_NE 1
 #define EQOP_EQ 2
@@ -23,99 +25,18 @@ int tipos_compativeis(int, int);
 #define RELOP_LT 3
 #define RELOP_GT 4
 
-static char *dup_text(const char *text) {
-    size_t length = strlen(text) + 1;
-    char *copy = (char *)malloc(length);
+void yyerror(const char *s);
+int tipos_compativeis(int, int);
+static char *dup_text(const char *text);
+static char *join2(const char *left, const char *right);
+static char *join3(const char *first, const char *second, const char *third);
+static char *new_temp_name(void);
+static char *new_label_name(void);
+static int is_numeric_type(int type);
+static char *relop_text(int op);
+static char *eqop_text(int op);
+static int has_text(const char *text);
 
-    if (!copy) {
-        perror("malloc");
-        exit(1);
-    }
-
-    memcpy(copy, text, length);
-    return copy;
-}
-
-static char *join2(const char *left, const char *right) {
-    size_t left_len = left ? strlen(left) : 0;
-    size_t right_len = right ? strlen(right) : 0;
-    char *result = (char *)malloc(left_len + right_len + 1);
-
-    if (!result) {
-        perror("malloc");
-        exit(1);
-    }
-
-    if (left_len > 0) {
-        memcpy(result, left, left_len);
-    }
-
-    if (right_len > 0) {
-        memcpy(result + left_len, right, right_len);
-    }
-
-    result[left_len + right_len] = '\0';
-    return result;
-}
-
-static char *join3(const char *first, const char *second, const char *third) {
-    char *result = join2(first, second);
-    char *joined = join2(result, third);
-    free(result);
-    return joined;
-}
-
-static char *new_temp_name(void) {
-    Temporary *temporary = temporary_new();
-    char *name = dup_text(temporary_get_name(temporary));
-    temporary_free(temporary);
-    return name;
-}
-
-static char *new_label_name(void) {
-    char buffer[32];
-    snprintf(buffer, sizeof(buffer), "L%d", label_counter++);
-    return dup_text(buffer);
-}
-
-static int is_numeric_type(int type) {
-    return type == SYM_TYPE_INT || type == SYM_TYPE_FLOAT;
-}
-
-static char *relop_text(int op) {
-    switch (op) {
-        case RELOP_LE:
-            return "<=";
-        case RELOP_GE:
-            return ">=";
-        case RELOP_LT:
-            return "<";
-        case RELOP_GT:
-            return ">";
-        default:
-            return "";
-    }
-}
-
-static char *eqop_text(int op) {
-    switch (op) {
-        case EQOP_NE:
-            return "!=";
-        case EQOP_EQ:
-            return "==";
-        default:
-            return "";
-    }
-}
-
-static int has_text(const char *text) {
-    return text && text[0] != '\0';
-}
-
-extern int column_number;
-extern int lexical_error_count;
-extern int yylineno;
-int semantic_error_count = 0;
 %}
 
 %union {
@@ -802,6 +723,95 @@ void yyerror(const char *s) {
 
     fprintf(stderr, "Error at line %d, column %d: %s\n",
             yylineno, column_number - yyleng, s);
+}
+
+static char *dup_text(const char *text) {
+    size_t length = strlen(text) + 1;
+    char *copy = (char *)malloc(length);
+
+    if (!copy) {
+        perror("malloc");
+        exit(1);
+    }
+
+    memcpy(copy, text, length);
+    return copy;
+}
+
+static char *join2(const char *left, const char *right) {
+    size_t left_len = left ? strlen(left) : 0;
+    size_t right_len = right ? strlen(right) : 0;
+    char *result = (char *)malloc(left_len + right_len + 1);
+
+    if (!result) {
+        perror("malloc");
+        exit(1);
+    }
+
+    if (left_len > 0) {
+        memcpy(result, left, left_len);
+    }
+
+    if (right_len > 0) {
+        memcpy(result + left_len, right, right_len);
+    }
+
+    result[left_len + right_len] = '\0';
+    return result;
+}
+
+static char *join3(const char *first, const char *second, const char *third) {
+    char *result = join2(first, second);
+    char *joined = join2(result, third);
+    free(result);
+    return joined;
+}
+
+static char *new_temp_name(void) {
+    Temporary *temporary = temporary_new();
+    char *name = dup_text(temporary_get_name(temporary));
+    temporary_free(temporary);
+    return name;
+}
+
+static char *new_label_name(void) {
+    char buffer[32];
+    snprintf(buffer, sizeof(buffer), "L%d", label_counter++);
+    return dup_text(buffer);
+}
+
+static int is_numeric_type(int type) {
+    return type == SYM_TYPE_INT || type == SYM_TYPE_FLOAT;
+}
+
+static char *relop_text(int op) {
+    switch (op) {
+        case RELOP_LE:
+            return "<=";
+        case RELOP_GE:
+            return ">=";
+        case RELOP_LT:
+            return "<";
+        case RELOP_GT:
+            return ">";
+        default:
+            return "";
+    }
+}
+
+static char *eqop_text(int op) {
+    switch (op) {
+        case EQOP_NE:
+            return "!=";
+        case EQOP_EQ:
+            return "==";
+        default:
+            return "";
+    }
+}
+
+static int has_text(const char *text) {
+    return text && text[0] != '\0';
 }
 
 int main(int argc, char **argv) {
