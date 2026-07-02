@@ -1,22 +1,64 @@
-int main() {
-    while (1) {
-        1 + 1;
-        a = 2;
-        int b, c = z;
-    }
+// teste completo etapa 3
 
-    while (true) {
-        while (a < 100){
-            a = a + 1;
-        }
-    }
-
-    while(2 + 2){
-        int a = soma();
-    }
-
-    while(!a){
+int fatorial(int n) {
+    if (n <= 1) {
+        return 1;
+    } else {
+        return n * fatorial(n);
     }
 }
 
-int soma(int a, int b){return a + b;}
+float media(float a, float b) {
+    float soma;
+    soma = a + b;
+    return soma / 2;
+}
+
+int classifica(int x) {
+    int resultado;
+    if (x > 0 && ~(x == 0)) {
+        resultado = 1;
+    } else {
+        if (x < 0) {
+            resultado = -1;
+        } else {
+            resultado = 0;
+        }
+    }
+    return resultado;
+}
+
+int main() {
+    int a, b;
+    float x, y;
+
+    a = 5;
+    b = 3;
+    x = 2.5;
+    y = 1.5;
+
+    int fat;
+    fat = fatorial(a);
+
+    float med;
+    med = media(x, y);
+
+    int cls;
+    cls = classifica(b);
+
+    while (a > 0) {
+        a = a - 1;
+        int local;
+        local = a * b;
+    }
+
+    int pot;
+    pot = a ** b;
+
+    print(fat, med, cls);
+
+    int cond;
+    cond = (a == 0) || (b > 1 && x < 3.0);
+
+    return 0;
+}
