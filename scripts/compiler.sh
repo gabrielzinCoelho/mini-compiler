@@ -19,10 +19,6 @@ fi
 # Diretórios
 SRC_DIR="src"
 BIN_DIR="bin"
-OUT_DIR="output"
-OUT_FILE="$OUT_DIR/output.txt"
-
-mkdir -p "$BIN_DIR" "$OUT_DIR"
 
 # Compilação
 echo "Iniciando compilação do Lexer e Parser..."
@@ -61,10 +57,8 @@ echo "Compilação concluída com sucesso!"
 # Execução
 echo ""
 echo "Executando com entrada: $INPUT_FILE"
-echo "Saída será salva em:    $OUT_FILE"
 echo "================================="
 
-bin/main "$INPUT_FILE" | tee "$OUT_FILE"
+bin/main "$INPUT_FILE"
 
 echo "================================="
-echo "✓ Saída salva em $OUT_FILE"
