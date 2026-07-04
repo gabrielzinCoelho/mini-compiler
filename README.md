@@ -2,7 +2,7 @@
 
 ## Sobre o projeto
 
-O objetivo do trabalho prático é desenvolver um compilador para uma mini linguagem didática. O trabalho está dividido em 3 etapas, conforme a descrição a seguir.
+O objetivo do trabalho prático é desenvolver um compilador para uma mini linguagem didática.
 
 ## Tecnologias Utilizadas
 
